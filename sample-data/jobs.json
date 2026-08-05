@@ -1,5 +1,5 @@
 [
-  { "id": "JOB-SYN-001", "company": "Northstar Health", "title": "Product Operations Analyst", "status": "active", "priorityTier": "A", "fitScore": 82, "salary": 98000 },
-  { "id": "JOB-SYN-002", "company": "Cedar Analytics", "title": "Workflow Data Analyst", "status": "active", "priorityTier": "B", "fitScore": 76, "salary": 91000 },
-  { "id": "JOB-SYN-003", "company": "Harbor Learning", "title": "Program Coordinator", "status": "archived", "priorityTier": "A", "fitScore": 88, "salary": 72000 }
+  { "id": "JOB-SYN-001", "company": "Northstar Health", "title": "Product Operations Analyst", "status": "active", "priorityTier": "A", "fitScore": 82, "salary": 98000, "synthetic": true },
+  { "id": "JOB-SYN-002", "company": "Cedar Analytics", "title": "Workflow Data Analyst", "status": "active", "priorityTier": "B", "fitScore": 76, "salary": 91000, "synthetic": true },
+  { "id": "JOB-SYN-003", "company": "Harbor Learning", "title": "Program Coordinator", "status": "archived", "priorityTier": "A", "fitScore": 88, "salary": 72000, "synthetic": true }
 ]

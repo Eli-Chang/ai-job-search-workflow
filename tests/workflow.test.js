@@ -7,7 +7,13 @@ import { rankJobs, approvedClaims, explainMissingClaims, renderResumeVariant, au
 test('priority ranking is deterministic and keeps archived jobs behind active work', () => {
   const ranked = rankJobs(jobs);
   assert.equal(ranked[0].company, 'Northstar Health');
+  assert.equal(ranked[0].priorityScore, 112);
   assert.equal(ranked.at(-1).status, 'archived');
+});
+
+test('public fixtures are explicitly synthetic', () => {
+  assert.equal(jobs.every((job) => job.synthetic === true), true);
+  assert.equal(evidence.every((record) => record.synthetic === true), true);
 });
 
 test('evidence selection is surface-specific', () => {
@@ -19,7 +25,16 @@ test('document rendering omits unsupported claims and audits forbidden text', ()
   const rendered = renderResumeVariant({ candidateName: 'Example Candidate', role: 'Product Operations Analyst', claimIds: ['EV-SYN-001', 'EV-SYN-003'], evidence });
   assert.deepEqual(rendered.usedEvidenceIds, ['EV-SYN-001']);
   assert.deepEqual(rendered.omittedEvidenceIds, ['EV-SYN-003']);
+  assert.equal(rendered.audit.passed, true);
   assert.equal(auditDocument(rendered.text, { forbiddenPatterns: [/actual employer/i, /private email/i] }).passed, true);
+});
+
+test('document auditing blocks private contact/path patterns and resets global regex state', () => {
+  assert.equal(auditDocument('Example Candidate | analyst').passed, true);
+  assert.equal(auditDocument('private@example.com').passed, false);
+  const globalPattern = /candidate/gi;
+  assert.equal(auditDocument('Example Candidate', { forbiddenPatterns: [globalPattern] }).passed, false);
+  assert.equal(auditDocument('Example Candidate', { forbiddenPatterns: [globalPattern] }).passed, false);
 });
 
 test('human approval gates block consequential action until every condition is met', () => {
@@ -28,4 +43,13 @@ test('human approval gates block consequential action until every condition is m
   assert.deepEqual(Object.keys(blocked.failures), ['claimsSupported', 'humanReview']);
   const allowed = evaluateGates({ jobStatus: 'active', duplicate: false, alreadySubmitted: false, packetAudited: true, claimsSupported: true, requiredFilesPresent: true, sensitiveFieldsResolved: true, preSubmitValidated: true, humanReview: true });
   assert.equal(allowed.allowed, true);
+});
+
+test('approval gates fail closed for missing or string-valued flags', () => {
+  const missing = evaluateGates({ jobStatus: 'active' });
+  assert.equal(missing.allowed, false);
+  assert.equal(Object.keys(missing.failures).includes('humanReview'), true);
+  const stringFlag = evaluateGates({ jobStatus: 'active', duplicate: 'false', alreadySubmitted: false, packetAudited: true, claimsSupported: true, requiredFilesPresent: true, sensitiveFieldsResolved: true, preSubmitValidated: true, humanReview: true });
+  assert.equal(stringFlag.allowed, false);
+  assert.equal(stringFlag.failures.notDuplicate, 'duplicate flag must be explicitly false');
 });

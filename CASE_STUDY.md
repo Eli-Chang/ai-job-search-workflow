@@ -38,7 +38,7 @@ The reference pipeline is deterministic: normalize records, rank with a document
 
 ## Human approval gates
 
-The gate evaluator blocks duplicate or already-submitted applications, missing files, unsupported claims, unresolved sensitive fields, login/CAPTCHA barriers, and missing pre-submit validation. This edition has no submission adapter.
+The gate evaluator blocks duplicate or already-submitted applications, missing files, unsupported claims, unresolved sensitive fields, and missing pre-submit validation. Login and CAPTCHA barriers are outside this reference slice and remain stop conditions for any production workflow. This edition has no submission adapter.
 
 ## Privacy decisions
 
