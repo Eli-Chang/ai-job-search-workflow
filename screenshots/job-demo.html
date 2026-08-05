@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:,">
+    <title>Job Search Workflow Portfolio Demo</title>
+    <style>
+      :root { font-family: Inter, ui-sans-serif, system-ui, sans-serif; background: #f6f7f9; color: #17202b; }
+      body { margin: 0; padding: 42px; } main { max-width: 980px; margin: auto; }
+      .header { display: flex; justify-content: space-between; align-items: end; margin-bottom: 26px; }
+      .eyebrow { color: #596b7e; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; font-weight: 800; }
+      h1 { font-size: 38px; margin: 8px 0 0; } .status { background: #e7f6ee; color: #17623c; border-radius: 999px; padding: 9px 14px; font-size: 13px; font-weight: 800; }
+      .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; }
+      .metric, .job { background: white; border: 1px solid #dce3ea; border-radius: 16px; padding: 20px; box-shadow: 0 8px 22px #28394d0b; }
+      .metric strong { display: block; font-size: 28px; margin-top: 8px; } .board { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .job h2 { font-size: 20px; margin: 10px 0 4px; } .company { color: #3d566f; } .score { color: #17623c; font-weight: 800; float: right; }
+      .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; } .tag { background: #eef2f7; padding: 7px 10px; border-radius: 8px; font-size: 12px; }
+      .gate { margin-top: 22px; padding: 15px; border-radius: 12px; background: #fff8e8; color: #745217; font-size: 13px; }
+      @media (max-width: 700px) { body { padding: 20px; } .summary, .board { grid-template-columns: 1fr; } h1 { font-size: 30px; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="header"><div><div class="eyebrow">Synthetic portfolio dashboard</div><h1>Review-first job search workflow</h1></div><div class="status">Human review required</div></div>
+      <div class="summary"><div class="metric"><div class="eyebrow">Active roles</div><strong>2</strong></div><div class="metric"><div class="eyebrow">Approved evidence</div><strong>2</strong></div><div class="metric"><div class="eyebrow">Submission gate</div><strong>Locked</strong></div></div>
+      <div class="board">
+        <article class="job"><span class="score">92 fit</span><div class="eyebrow">Priority A</div><h2>Product Operations Analyst</h2><div class="company">Northstar Health · synthetic employer</div><div class="tags"><span class="tag">workflow</span><span class="tag">health product</span><span class="tag">evidence matched</span></div></article>
+        <article class="job"><span class="score">86 fit</span><div class="eyebrow">Priority B</div><h2>Workflow Data Analyst</h2><div class="company">Cedar Analytics · synthetic employer</div><div class="tags"><span class="tag">analytics</span><span class="tag">operations</span><span class="tag">draft only</span></div></article>
+      </div>
+      <div class="gate">Submission remains unavailable until duplicate checks, sensitive-field checks, claim audits, required-file checks, pre-submit validation, and human review all pass.</div>
+    </main>
+  </body>
+</html>

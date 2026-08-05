@@ -1,0 +1,5 @@
+[
+  { "id": "EV-SYN-001", "claim": "Built a consent-gated workflow boundary.", "approvedSurfaces": ["resume", "case-study"] },
+  { "id": "EV-SYN-002", "claim": "Designed a source-of-truth data model with explicit status fields.", "approvedSurfaces": ["resume", "case-study"] },
+  { "id": "EV-SYN-003", "claim": "Produced a fictional production-impact metric.", "approvedSurfaces": [] }
+]

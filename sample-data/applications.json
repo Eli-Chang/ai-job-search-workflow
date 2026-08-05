@@ -1,0 +1,4 @@
+[
+  { "id": "APP-SYN-001", "jobId": "JOB-SYN-001", "status": "ready_for_review", "synthetic": true },
+  { "id": "APP-SYN-002", "jobId": "JOB-SYN-002", "status": "draft", "synthetic": true }
+]
