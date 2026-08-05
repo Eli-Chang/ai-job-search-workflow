@@ -3,7 +3,7 @@ import { approvedClaims, explainMissingClaims } from './evidence.js';
 const DEFAULT_FORBIDDEN_PATTERNS = Object.freeze([
   /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i,
   /\b\d{3}[-.\s]\d{3}[-.\s]\d{4}\b/,
-  /(?:[A-Z]:\\\\|\/Users\/|\/home\/)/i,
+  /(?:[A-Z]:\\|\/Users\/|\/home\/)/i,
   /\b(?:sk-|ghp_|github_pat_|bearer\s+|authorization\s*[:=])/i,
 ]);
 

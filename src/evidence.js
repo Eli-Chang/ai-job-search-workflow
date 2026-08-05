@@ -1,5 +1,15 @@
-export function evidenceMap(records) {
-  return new Map(records.map((record) => [record.id, record]));
+function isValidSyntheticEvidence(record) {
+  return Boolean(record)
+    && record.synthetic === true
+    && typeof record.id === 'string'
+    && typeof record.claim === 'string'
+    && Array.isArray(record.approvedSurfaces)
+    && record.approvedSurfaces.every((surface) => typeof surface === 'string');
+}
+
+export function evidenceMap(records = []) {
+  const safeRecords = Array.isArray(records) ? records.filter(isValidSyntheticEvidence) : [];
+  return new Map(safeRecords.map((record) => [record.id, record]));
 }
 
 export function approvedClaims(ids, records, surface) {
@@ -9,5 +19,5 @@ export function approvedClaims(ids, records, surface) {
 
 export function explainMissingClaims(ids, records, surface) {
   const map = evidenceMap(records);
-  return ids.filter((id) => !map.get(id)?.approvedSurfaces?.includes(surface));
+  return (Array.isArray(ids) ? ids : []).filter((id) => !map.get(id)?.approvedSurfaces?.includes(surface));
 }

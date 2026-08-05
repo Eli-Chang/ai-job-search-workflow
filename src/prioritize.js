@@ -12,6 +12,9 @@ export function rankJobs(jobs) {
     .map((job) => ({ ...job, priorityScore: priorityScore(job) }))
     .sort((a, b) => {
       const activeFirst = Number(b.status === 'active') - Number(a.status === 'active');
-      return activeFirst || b.priorityScore - a.priorityScore || a.id.localeCompare(b.id);
+      const aId = typeof a.id === 'string' ? a.id : '';
+      const bId = typeof b.id === 'string' ? b.id : '';
+      const idOrder = aId < bId ? -1 : aId > bId ? 1 : 0;
+      return activeFirst || b.priorityScore - a.priorityScore || idOrder;
     });
 }

@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import jobs from '../sample-data/jobs.json' with { type: 'json' };
 import evidence from '../sample-data/evidence.json' with { type: 'json' };
+import applications from '../sample-data/applications.json' with { type: 'json' };
 import { rankJobs, approvedClaims, explainMissingClaims, renderResumeVariant, auditDocument, evaluateGates } from '../src/index.js';
 
 test('priority ranking is deterministic and keeps archived jobs behind active work', () => {
@@ -14,6 +15,7 @@ test('priority ranking is deterministic and keeps archived jobs behind active wo
 test('public fixtures are explicitly synthetic', () => {
   assert.equal(jobs.every((job) => job.synthetic === true), true);
   assert.equal(evidence.every((record) => record.synthetic === true), true);
+  assert.equal(applications.every((application) => application.synthetic === true), true);
 });
 
 test('evidence selection is surface-specific', () => {
@@ -32,6 +34,7 @@ test('document rendering omits unsupported claims and audits forbidden text', ()
 test('document auditing blocks private contact/path patterns and resets global regex state', () => {
   assert.equal(auditDocument('Example Candidate | analyst').passed, true);
   assert.equal(auditDocument('private@example.com').passed, false);
+  assert.equal(auditDocument('C:\\Users\\synthetic\\resume.md').passed, false);
   const globalPattern = /candidate/gi;
   assert.equal(auditDocument('Example Candidate', { forbiddenPatterns: [globalPattern] }).passed, false);
   assert.equal(auditDocument('Example Candidate', { forbiddenPatterns: [globalPattern] }).passed, false);
@@ -52,4 +55,14 @@ test('approval gates fail closed for missing or string-valued flags', () => {
   const stringFlag = evaluateGates({ jobStatus: 'active', duplicate: 'false', alreadySubmitted: false, packetAudited: true, claimsSupported: true, requiredFilesPresent: true, sensitiveFieldsResolved: true, preSubmitValidated: true, humanReview: true });
   assert.equal(stringFlag.allowed, false);
   assert.equal(stringFlag.failures.notDuplicate, 'duplicate flag must be explicitly false');
+  assert.equal(evaluateGates(null).allowed, false);
+});
+
+test('evidence selection rejects malformed or non-synthetic records', () => {
+  const malformed = [
+    { id: 'EV-BAD-001', claim: 'Bad surface type', approvedSurfaces: 'resume', synthetic: true },
+    { id: 'EV-BAD-002', claim: 'Non-synthetic claim', approvedSurfaces: ['resume'], synthetic: false },
+  ];
+  assert.deepEqual(approvedClaims(['EV-BAD-001', 'EV-BAD-002'], malformed, 'resume'), []);
+  assert.deepEqual(explainMissingClaims(['EV-BAD-001', 'EV-BAD-002'], malformed, 'resume'), ['EV-BAD-001', 'EV-BAD-002']);
 });

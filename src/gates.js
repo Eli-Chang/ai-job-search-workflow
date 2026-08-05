@@ -12,10 +12,11 @@ const BOOLEAN_REQUIREMENTS = Object.freeze([
 export const GATES = Object.freeze(['jobIsActive', ...BOOLEAN_REQUIREMENTS.map(([, , gate]) => gate)]);
 
 export function evaluateGates(context = {}) {
+  const safeContext = context && typeof context === 'object' ? context : {};
   const failures = [];
-  if (context.jobStatus !== 'active') failures.push(['jobIsActive', 'job is not active']);
+  if (safeContext.jobStatus !== 'active') failures.push(['jobIsActive', 'job is not active']);
   for (const [field, expected, gate, message] of BOOLEAN_REQUIREMENTS) {
-    if (typeof context[field] !== 'boolean' || context[field] !== expected) failures.push([gate, message]);
+    if (typeof safeContext[field] !== 'boolean' || safeContext[field] !== expected) failures.push([gate, message]);
   }
   return { allowed: failures.length === 0, failures: Object.fromEntries(failures) };
 }
