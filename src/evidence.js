@@ -1,6 +1,7 @@
 function isValidSyntheticEvidence(record) {
   return Boolean(record)
     && record.synthetic === true
+    && record.provenance === 'public-synthetic-fixture-v1'
     && typeof record.id === 'string'
     && typeof record.claim === 'string'
     && Array.isArray(record.approvedSurfaces)
@@ -9,7 +10,12 @@ function isValidSyntheticEvidence(record) {
 
 export function evidenceMap(records = []) {
   const safeRecords = Array.isArray(records) ? records.filter(isValidSyntheticEvidence) : [];
-  return new Map(safeRecords.map((record) => [record.id, record]));
+  const map = new Map();
+  for (const record of safeRecords) {
+    if (map.has(record.id)) return new Map();
+    map.set(record.id, record);
+  }
+  return map;
 }
 
 export function approvedClaims(ids, records, surface) {

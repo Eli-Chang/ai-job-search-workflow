@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import jobs from '../sample-data/jobs.json' with { type: 'json' };
 import evidence from '../sample-data/evidence.json' with { type: 'json' };
 import applications from '../sample-data/applications.json' with { type: 'json' };
-import { rankJobs, approvedClaims, explainMissingClaims, renderResumeVariant, auditDocument, evaluateGates } from '../src/index.js';
+import { rankJobs, approvedClaims, explainMissingClaims, renderResumeVariant, auditDocument, createReviewRecord, evaluateGates } from '../src/index.js';
 
 test('priority ranking is deterministic and keeps archived jobs behind active work', () => {
   const ranked = rankJobs(jobs);
@@ -16,6 +16,7 @@ test('public fixtures are explicitly synthetic', () => {
   assert.equal(jobs.every((job) => job.synthetic === true), true);
   assert.equal(evidence.every((record) => record.synthetic === true), true);
   assert.equal(applications.every((application) => application.synthetic === true), true);
+  assert.equal(evidence.every((record) => record.provenance === 'public-synthetic-fixture-v1'), true);
 });
 
 test('evidence selection is surface-specific', () => {
@@ -40,22 +41,28 @@ test('document auditing blocks private contact/path patterns and resets global r
   assert.equal(auditDocument('Example Candidate', { forbiddenPatterns: [globalPattern] }).passed, false);
 });
 
+test('document audit policy cannot be replaced and failed rendering stops', () => {
+  assert.equal(auditDocument('private@example.com', { forbiddenPatterns: [] }).passed, false);
+  assert.throws(() => renderResumeVariant({ candidateName: 'private@example.com', role: 'Analyst', claimIds: [], evidence }), /privacy audit failed/);
+});
+
 test('human approval gates block consequential action until every condition is met', () => {
-  const blocked = evaluateGates({ jobStatus: 'active', duplicate: false, alreadySubmitted: false, packetAudited: true, claimsSupported: false, requiredFilesPresent: true, sensitiveFieldsResolved: true, preSubmitValidated: true, humanReview: false });
+  const blocked = evaluateGates({ reviewRecord: createReviewRecord({ jobStatus: 'active', duplicate: false, alreadySubmitted: false, packetAudited: true, claimsSupported: false, requiredFilesPresent: true, sensitiveFieldsResolved: true, preSubmitValidated: true, humanReview: false }) });
   assert.equal(blocked.allowed, false);
   assert.deepEqual(Object.keys(blocked.failures), ['claimsSupported', 'humanReview']);
-  const allowed = evaluateGates({ jobStatus: 'active', duplicate: false, alreadySubmitted: false, packetAudited: true, claimsSupported: true, requiredFilesPresent: true, sensitiveFieldsResolved: true, preSubmitValidated: true, humanReview: true });
+  const allowed = evaluateGates({ reviewRecord: createReviewRecord({ jobStatus: 'active', duplicate: false, alreadySubmitted: false, packetAudited: true, claimsSupported: true, requiredFilesPresent: true, sensitiveFieldsResolved: true, preSubmitValidated: true, humanReview: true }) });
   assert.equal(allowed.allowed, true);
 });
 
 test('approval gates fail closed for missing or string-valued flags', () => {
-  const missing = evaluateGates({ jobStatus: 'active' });
+  const missing = evaluateGates({ reviewRecord: createReviewRecord({ jobStatus: 'active' }) });
   assert.equal(missing.allowed, false);
   assert.equal(Object.keys(missing.failures).includes('humanReview'), true);
-  const stringFlag = evaluateGates({ jobStatus: 'active', duplicate: 'false', alreadySubmitted: false, packetAudited: true, claimsSupported: true, requiredFilesPresent: true, sensitiveFieldsResolved: true, preSubmitValidated: true, humanReview: true });
+  const stringFlag = evaluateGates({ reviewRecord: createReviewRecord({ jobStatus: 'active', duplicate: 'false', alreadySubmitted: false, packetAudited: true, claimsSupported: true, requiredFilesPresent: true, sensitiveFieldsResolved: true, preSubmitValidated: true, humanReview: true }) });
   assert.equal(stringFlag.allowed, false);
   assert.equal(stringFlag.failures.notDuplicate, 'duplicate flag must be explicitly false');
   assert.equal(evaluateGates(null).allowed, false);
+  assert.equal(evaluateGates({ jobStatus: 'active', duplicate: false, alreadySubmitted: false, packetAudited: true, claimsSupported: true, requiredFilesPresent: true, sensitiveFieldsResolved: true, preSubmitValidated: true, humanReview: true }).allowed, false);
 });
 
 test('evidence selection rejects malformed or non-synthetic records', () => {
@@ -65,4 +72,9 @@ test('evidence selection rejects malformed or non-synthetic records', () => {
   ];
   assert.deepEqual(approvedClaims(['EV-BAD-001', 'EV-BAD-002'], malformed, 'resume'), []);
   assert.deepEqual(explainMissingClaims(['EV-BAD-001', 'EV-BAD-002'], malformed, 'resume'), ['EV-BAD-001', 'EV-BAD-002']);
+});
+
+test('evidence selection fails closed on duplicate IDs', () => {
+  const duplicate = [{ ...evidence[0] }, { ...evidence[0], claim: 'Conflicting claim.' }];
+  assert.deepEqual(approvedClaims(['EV-SYN-001'], duplicate, 'resume'), []);
 });

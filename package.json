@@ -1,7 +1,6 @@
 {
   "name": "ai-job-search-workflow",
   "version": "1.0.0",
-  "private": true,
   "type": "module",
   "description": "Synthetic reference implementation for evidence-backed job-search workflow controls.",
   "scripts": {

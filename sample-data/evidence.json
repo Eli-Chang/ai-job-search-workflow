@@ -1,5 +1,5 @@
 [
-  { "id": "EV-SYN-001", "claim": "Built a consent-gated workflow boundary.", "approvedSurfaces": ["resume", "case-study"], "synthetic": true },
-  { "id": "EV-SYN-002", "claim": "Designed a source-of-truth data model with explicit status fields.", "approvedSurfaces": ["resume", "case-study"], "synthetic": true },
-  { "id": "EV-SYN-003", "claim": "Produced a fictional production-impact metric.", "approvedSurfaces": [], "synthetic": true }
+  { "id": "EV-SYN-001", "claim": "Built a consent-gated workflow boundary.", "approvedSurfaces": ["resume", "case-study"], "synthetic": true, "provenance": "public-synthetic-fixture-v1" },
+  { "id": "EV-SYN-002", "claim": "Designed a source-of-truth data model with explicit status fields.", "approvedSurfaces": ["resume", "case-study"], "synthetic": true, "provenance": "public-synthetic-fixture-v1" },
+  { "id": "EV-SYN-003", "claim": "UNSUPPORTED SYNTHETIC CLAIM: fictional production-impact metric; intentionally excluded from every approved surface.", "approvedSurfaces": [], "synthetic": true, "provenance": "public-synthetic-fixture-v1" }
 ]

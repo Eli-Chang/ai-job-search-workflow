@@ -11,16 +11,19 @@ export function renderResumeVariant({ candidateName, role, claimIds, evidence })
   const approved = approvedClaims(claimIds, evidence, 'resume');
   const missing = explainMissingClaims(claimIds, evidence, 'resume');
   const text = [`${candidateName} | ${role}`, '', 'Selected evidence:', ...approved.map((record) => `- ${record.claim}`)].join('\n');
+  const audit = auditDocument(text);
+  if (!audit.passed) throw new Error('Document privacy audit failed; rendering stopped.');
   return {
     text,
     usedEvidenceIds: approved.map((record) => record.id),
     omittedEvidenceIds: missing,
-    audit: auditDocument(text),
+    audit,
   };
 }
 
 export function auditDocument(text, { forbiddenPatterns = DEFAULT_FORBIDDEN_PATTERNS } = {}) {
-  const findings = forbiddenPatterns.filter((pattern) => {
+  const patterns = [...DEFAULT_FORBIDDEN_PATTERNS, ...(Array.isArray(forbiddenPatterns) ? forbiddenPatterns : [])];
+  const findings = patterns.filter((pattern) => {
     pattern.lastIndex = 0;
     const matched = pattern.test(text);
     pattern.lastIndex = 0;

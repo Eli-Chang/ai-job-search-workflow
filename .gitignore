@@ -7,3 +7,6 @@ coverage/
 *.local
 reports/private/
 Thumbs.db
+
+.codex/coordination/*
+!.codex/coordination/project.yaml
